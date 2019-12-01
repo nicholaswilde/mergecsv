@@ -2,15 +2,28 @@
 
 '''
 
+from datetime import datetime
+from datetime import timedelta
+
 # ----------#
 # CONSTANTS #
 # ----------#
 
-WORD_SIZE = 16
+# The default word size exported per line
+WORD_SIZE = 16 # 0000000000000000
+
+# The reference date and time in which PLC calculations start
+REF_DATE = datetime(2001, 1, 1)
+
+# ------#
+# CLASS #
+# ------#
 
 class word:
     def __init__(self, value):
-        # https://stackoverflow.com/a/4843178/1061279
+        '''
+        https://stackoverflow.com/a/4843178/1061279
+        '''
         if not isinstance(value, str): raise TypeError(value)
         self.value = str(value)
 
@@ -46,35 +59,87 @@ class word:
     # FUNCTIONS #
     # ----------#
 
+
     def encode(self):
         ''''''
-        return self.value.encode()
+        return(self.value.encode())
+
 
     def to_bin(self):
         ''''''
         return(bin(self.to_int()))
 
 
+    def to_date(self):
+        '''
+        '''
+        dt = REF_DATE + timedelta(seconds=self.to_int())
+        val = "D#{:04}-{:02}-{:02}".format(dt.year,dt.month,dt.day)
+        return(val)
+
+
+    def to_date_and_time(self):
+        '''
+        '''
+        dt = REF_DATE + timedelta(seconds=self.to_int())
+        val = "DT#{:04}-{:02}-{:02}-{:02}:{:02}:{:02}".format(dt.year,dt.month,dt.day,dt.hour,dt.minute,dt.second)
+        return(val)
+
     def to_int(self):
         ''''''
         return(int(self.value,2))
+
 
     def to_string(self):
         ''''''
         return(chr(self.to_int))
 
-    def resize(self):
+
+    def to_time(self):
         ''''''
+        # Get the total number of seconds
+        val = self.to_int() / 100
+        # Minutes
+        m = int(val // 60)
+        # Remaining seconds
+        s = int(val % 60)
+        val = "T#{}m{}s".format(m,s)
+        return(val)
+
+
+    def to_time_of_day(self):
+        '''
+        Return the time of day from total number of seconds
+        https://stackoverflow.com/a/539360/
+        '''
+        s = self.to_int()
+        # hours
+        h = s // 3600
+        # remaining seconds
+        s -=(h * 3600)
+        # minutes
+        m = s // 60
+        # remaining seconds
+        s -= (m * 60)
+        # total time
+        val = 'TOD#{:02}:{:02}:{:02}'.format(int(h), int(m), int(s))
+        return(val)
+
+
+    def resize(self):
+        '''
+        Resize the word to the next word size (4bit -> 16bit, 23bit -> 32bit)
+        '''
         # Quotient
         q = self.length // WORD_SIZE
-
         # Remainder
-        r = self.length  % WORD_SIZE
-
+        r = self.length % WORD_SIZE
+        # Check if the remainder is not zero
         if r != 0:
-            return self.zfill((q + 1) * WORD_SIZE)
+            return(self.zfill((q + 1) * WORD_SIZE))
         else:
-            return self.value
+            return(self.value)
+
 
     def shift_left(self, n):
         ''''''
@@ -85,7 +150,7 @@ class word:
         ''''''
         return(bin(self.to_int() >> n)[2:].zfill(self.length))
 
-    """
+    '''
        sign    1 bit  31
        exp     8 bits 30-23     bias 127
        frac   23 bits 22-0
@@ -95,9 +160,12 @@ class word:
     +-------+-------+-------+-------+
     1|<--8-->|<---23 bits---------->|
     <-----------32 bits------------->
-    """
+    '''
     def to_float32(self):
-        '''https://math.stackexchange.com/a/1506364'''
+        '''
+        Convert to a 32bit float
+        https://math.stackexchange.com/a/1506364
+        '''
         if self.length != 32: raise ValueError(self.length)
 
         n = self.to_int()
