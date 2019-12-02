@@ -1,9 +1,7 @@
-'''
+#!/usr/bin/env python
+'''A custom class that import a word of length 16 characters as a string and perform actions on them'''
 
-'''
-
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 # ----------#
 # CONSTANTS #
@@ -71,16 +69,14 @@ class word:
 
 
     def to_date(self):
-        '''
-        '''
+        '''Transform to a date in format D#YYYY-MM-DD'''
         dt = REF_DATE + timedelta(seconds=self.to_int())
         val = "D#{:04}-{:02}-{:02}".format(dt.year,dt.month,dt.day)
         return(val)
 
 
     def to_date_and_time(self):
-        '''
-        '''
+        '''Transform to a date and time in format DT#YYYY-MM-DD-HH-MM-SS'''
         dt = REF_DATE + timedelta(seconds=self.to_int())
         val = "DT#{:04}-{:02}-{:02}-{:02}:{:02}:{:02}".format(dt.year,dt.month,dt.day,dt.hour,dt.minute,dt.second)
         return(val)
@@ -96,7 +92,7 @@ class word:
 
 
     def to_time(self):
-        ''''''
+        '''Transform to a time in the format T#MmSs'''
         # Get the total number of seconds
         val = self.to_int() / 100
         # Minutes
@@ -109,7 +105,7 @@ class word:
 
     def to_time_of_day(self):
         '''
-        Return the time of day from total number of seconds
+        Return the time of day from the total number of seconds
         https://stackoverflow.com/a/539360/
         '''
         s = self.to_int()
@@ -127,9 +123,7 @@ class word:
 
 
     def resize(self):
-        '''
-        Resize the word to the next word size (4bit -> 16bit, 23bit -> 32bit)
-        '''
+        '''Resize the word to the next word size (4bit -> 16bit, 23bit -> 32bit)'''
         # Quotient
         q = self.length // WORD_SIZE
         # Remainder
@@ -149,6 +143,18 @@ class word:
     def shift_right(self, n):
         ''''''
         return(bin(self.to_int() >> n)[2:].zfill(self.length))
+
+
+    def split(self):
+        '''Split the value in half. Add a leading 0 if the length is negative'''
+        n = int(self.length)
+        # Add 1 to n if the length is negative
+        n = n + 1 if n % 2 != 0 else n
+        # Fill to even number of bits
+        v = self.zfill(n)
+        n = int(n / 2)
+        return([v[:n],v[n:]])
+
 
     '''
        sign    1 bit  31
