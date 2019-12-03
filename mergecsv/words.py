@@ -28,7 +28,7 @@ class word:
 
     def __repr__(self):
         """https://stackoverflow.com/a/1984177"""
-        return(self.value)
+        return self.value
 
 
     # -----------#
@@ -38,13 +38,13 @@ class word:
     @property
     def length(self):
         """https://stackoverflow.com/a/27571588"""
-        return(len(self.value))
+        return len(self.value)
 
 
     @property
     def type(self):
         """"""
-        return(type(self.value))
+        return type(self.value)
 
 
     @property
@@ -62,9 +62,45 @@ class word:
         """"""
         return self.value.encode()
 
+
     def flip(self):
         """"""
         return self.split()[1] + self.split()[0]
+
+
+    def resize(self):
+        """Resize the word to the next word size (4bit -> 16bit, 23bit -> 32bit)"""
+        # Quotient
+        q = self.length // WORD_SIZE
+        # Remainder
+        r = self.length % WORD_SIZE
+        # Check if the remainder is not zero
+        if r != 0:
+            return self.zfill((q + 1) * WORD_SIZE)
+        else:
+            return self.value
+
+
+    def shift_left(self, n):
+        """"""
+        return bin(self.to_int() << n)[2:].zfill(self.length)
+
+
+    def shift_right(self, n):
+        """"""
+        return bin(self.to_int() >> n)[2:].zfill(self.length)
+
+
+    def split(self):
+        """Split the value in half. Add a leading 0 if the length is negative"""
+        n = int(self.length)
+        # Add 1 to n if the length is negative
+        n = n + 1 if n % 2 != 0 else n
+        # Fill to even number of bits
+        v = self.zfill(n)
+        n = int(n / 2)
+        return [v[:n],v[n:]]
+
 
     def to_bin(self):
         """"""
@@ -74,15 +110,14 @@ class word:
     def to_date(self):
         """Transform to a date in format D#YYYY-MM-DD"""
         dt = REF_DATE + timedelta(seconds=self.to_int())
-        val = "D#{:04}-{:02}-{:02}".format(dt.year,dt.month,dt.day)
-        return val
+        return "D#{:04}-{:02}-{:02}".format(dt.year,dt.month,dt.day)
 
 
     def to_date_and_time(self):
         """Transform to a date and time in format DT#YYYY-MM-DD-HH-MM-SS"""
         dt = REF_DATE + timedelta(seconds=self.to_int())
-        val = "DT#{:04}-{:02}-{:02}-{:02}:{:02}:{:02}".format(dt.year,dt.month,dt.day,dt.hour,dt.minute,dt.second)
-        return val
+        return "DT#{:04}-{:02}-{:02}-{:02}:{:02}:{:02}".format(dt.year,dt.month,dt.day,dt.hour,dt.minute,dt.second)
+
 
     def to_int(self):
         """"""
@@ -121,40 +156,6 @@ class word:
         s -= (m * 60)
         # total time
         return 'TOD#{:02}:{:02}:{:02}'.format(int(h), int(m), int(s))
-
-
-    def resize(self):
-        """Resize the word to the next word size (4bit -> 16bit, 23bit -> 32bit)"""
-        # Quotient
-        q = self.length // WORD_SIZE
-        # Remainder
-        r = self.length % WORD_SIZE
-        # Check if the remainder is not zero
-        if r != 0:
-            return(self.zfill((q + 1) * WORD_SIZE))
-        else:
-            return(self.value)
-
-
-    def shift_left(self, n):
-        """"""
-        return bin(self.to_int() << n)[2:].zfill(self.length)
-
-
-    def shift_right(self, n):
-        """"""
-        return bin(self.to_int() >> n)[2:].zfill(self.length)
-
-
-    def split(self):
-        """Split the value in half. Add a leading 0 if the length is negative"""
-        n = int(self.length)
-        # Add 1 to n if the length is negative
-        n = n + 1 if n % 2 != 0 else n
-        # Fill to even number of bits
-        v = self.zfill(n)
-        n = int(n / 2)
-        return([v[:n],v[n:]])
 
 
     def to_float32(self):
@@ -202,6 +203,17 @@ class word:
                 return float('nan')
         return (-1)**sign * (1 + fraction / 2**23) * 2**(exp - 127)
 
+
+    def two_comps(self):
+        """
+        compute the 2's compliment of the int value v
+        https://stackoverflow.com/a/9147327
+        """
+        v = self.to_int()
+        b = self.length
+        if (v & (1 << (b - 1))) != 0: # if sign bit is set, e.g. 8bit: 128-255
+            v = v - (1 << b)          # Compute the negative value
+        return v
 
     def zfill(self, n):
         """"""
