@@ -4,7 +4,7 @@
 import re
 
 
-class var:
+class Var:
     def __init__(self, row):
         """"""
         if not isinstance(row, dict):
@@ -12,7 +12,8 @@ class var:
 
         self.id = row["Identifier"]
         self.address = row["Address"]
-        self.type = row["Type"]
+        # Remove the [#] from STRING[#]
+        self.type = re.search(r'([A-Z])\w+', row["Type"]).group()
         self.value = None
 
     def __repr__(self):

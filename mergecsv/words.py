@@ -2,6 +2,7 @@
 '''A custom class that import a word of length 16 characters as a string and perform actions on them'''
 
 from datetime import datetime, timedelta
+import re
 
 # ----------#
 # CONSTANTS #
@@ -17,7 +18,7 @@ REF_DATE = datetime(2001, 1, 1)
 # CLASS #
 # ------#
 
-class word:
+class Word:
     def __init__(self, value):
         """
         https://stackoverflow.com/a/4843178/1061279
@@ -126,7 +127,7 @@ class word:
 
     def to_string(self):
         """"""
-        return chr(self.to_int)
+        return chr(self.to_int())
 
 
     def to_time(self):
