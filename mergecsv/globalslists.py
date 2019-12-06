@@ -2,48 +2,77 @@
 '''A custom class that import a word of length 16 characters as a string and perform actions on them'''
 
 import csv
+from collections import OrderedDict
+
 from vars import Var
 from evaluators import ObjectEvaluator
 
+
 class GlobalsList:
-    def __init__(self):
+    def __init__(self, hl):
         """"""
-        self._globals_list = []
-        self._data_list = []
-        self._results_list = []
+        self._gl = [] # global variables list
+        self._dl = [] # data list
+        self._ol = [] # Output list
+        self._hl = hl # Header list
 
-    def globals_reader(self, file_path):
+    def _set_header(self, l):
         """"""
-        with open(file_path, mode='r') as globals_file:
-            self._globals_list = [Var(row) for row in csv.DictReader(globals_file)]
+        for i, key in enumerate(self._hl):
+            if key == None:
+                self._hl[i] = l[i]
 
-    def globals_export(self, file_path):
+    def globals_reader(self, fp):
         """"""
-        # TODO - write globals_export
-        pass
+        with open(fp, mode='r') as gf:
+            #self._gl = [Var(row) for row in csv.DictReader(gf)]
+            for i, row in enumerate(csv.DictReader(gf)):
+                if i == 0:
+                    self._set_header(list(row.keys()))
+                self._gl.append(Var(row))
 
-    def data_reader(self, file_path):
+    def globals_writer(self, fp):
         """"""
-        with open(file_path, mode='r') as data_file:
-            self._data_list = [''.join(row) for row in csv.reader(data_file)]
+        with open(fp, mode='w', newline='') as gf:
+            w = csv.DictWriter(gf, fieldnames=self._hl)
+            w.writeheader()
+            for gv in self._convert_to_dict():
+                w.writerow(gv)
+
+    def data_reader(self, fp):
+        """"""
+        with open(fp, mode='r') as df:
+            self._dl = [''.join(row) for row in csv.reader(df)]
 
     def get_globals(self):
         """Return a list of the global variables"""
-        return self._globals_list
+        return self._gl
 
     def get_data(self):
         """Return a list of the data values"""
-        return self._data_list
+        return self._dl
 
-    def get_results(self):
+    def get_output(self):
         """"""
-        return(self._results_list)
+        return self._ol
 
     def merge_data(self):
         """Merge the data list with the globals list"""
-        oe = ObjectEvaluator(self._data_list)
+        oe = ObjectEvaluator(self._dl)
+        # Loop over the global variables
+        for gv in self._gl:
+            # Get the global variable value
+            gv.value = oe.evaluate(gv, gv.type)
+            # Add it to the output list
+            self._ol.append(gv)
 
-        for var in self._globals_list:
-            var.value = oe.evaluate(var, var.type)
-            self._results_list.append(var)
-
+    def _convert_to_dict(self):
+        """"""
+        l = []
+        od = OrderedDict()
+        for gv in self._ol:
+            od.update({self._hl[0]: gv.id})
+            od.update({self._hl[1]: gv.address})
+            od.update({self._hl[2]: gv.type})
+            l.append(od)
+        return l
