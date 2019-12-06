@@ -9,11 +9,12 @@ class Var:
         """"""
         if not isinstance(row, dict):
             raise TypeError(row)
-
-        self.id = row["Identifier"]
-        self.address = row["Address"]
+        row = list(row.values())
+        # Assume that the order of the rows is [Identifier, Address, Type]
+        self.id = row[0]
+        self.address = row[1]
         # Remove the [#] from STRING[#]
-        self.type = re.search(r'([A-Z])\w+', row["Type"]).group()
+        self.type = re.search(r'([A-Z])\w+', row[2]).group()
         self.value = None
 
     def __repr__(self):
