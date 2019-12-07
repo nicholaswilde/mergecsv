@@ -11,20 +11,20 @@ DEC_PLACES = 5
 class StringEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
         l = []
-        co = self._current_object
+        co = self._co
         # Get the number of letters
         i = co.index
         # Get the length of the STRING
-        n = Word(data_list[i+1]).to_int()
+        n = Word(dl[i+1]).to_int()
         # The first letter is at the 3rd word
         i += 2
         # Check if the word length is odd or even and then divide it in half
@@ -32,7 +32,7 @@ class StringEvaluator:
         # Loop over the words
         for j in range(i, i+m):
             # Get the word
-            w = Word(data_list[j])
+            w = Word(dl[j])
             # Flip the bits
             w.value = w.flip()
             # Split the word into two 8bit pieces
@@ -46,151 +46,151 @@ class StringEvaluator:
 class RealEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index+1] + data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index+1] + dl[co.index])
         return "{0:.{1}f}".format(w.to_float32(), DEC_PLACES)
 
 
 class UDIntEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None # Current object
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index+1] + data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index+1] + dl[co.index])
         return w.to_int()
 
 
 class UIntEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index])
         return w.to_int()
 
 
 class DIntEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index+1] + data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index+1] + dl[co.index])
         return w.two_comps()
 
 
 class IntEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index])
         return w.two_comps()
 
 
 class TimeEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index+1]+data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index+1]+dl[co.index])
         return w.to_time()
 
 
 class TimeOfDayEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index+1]+data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index+1]+dl[co.index])
         return w.to_time_of_day()
 
 
 class DateEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index+1]+data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index+1]+dl[co.index])
         return w.to_date()
 
 
 class DateAndTimeEvaluator:
     def __init__(self):
         """"""
-        self._current_object = None
+        self._co = None
 
-    def start_object(self, the_object):
+    def start_object(self, o):
         """"""
-        self._current_object = the_object
+        self._co = o
 
     def get_value(self):
         """"""
-        co = self._current_object
-        w = Word(data_list[co.index+1]+data_list[co.index])
+        co = self._co
+        w = Word(dl[co.index+1]+dl[co.index])
         return w.to_date_and_time()
 
 
 class ObjectEvaluator:
-    def __init__(self, list):
-        global data_list
-        data_list = list
+    def __init__(self, l):
+        global dl
+        dl = l
 
     def evaluate(self, evaluatable, var_type):
         """"""
@@ -231,3 +231,24 @@ factory.register_type("DATE_AND_TIME", DateAndTimeEvaluator)
 factory.register_type("WORD", IntEvaluator)
 factory.register_type("DWORD", DIntEvaluator)
 factory.register_type("STRING", StringEvaluator)
+
+
+def _test():
+    """A test method for the module"""
+    dl = [
+        "0000010000011001",
+        "0011111110011110"
+    ]
+
+    row = {
+        "Identifier":"Float1p2345",
+        "Address":"DT0",
+        "Type":"REAL",
+        "Value":""
+    }
+    v = Var(row)
+    oe = ObjectEvaluator(dl)
+    print(oe.evaluate(v, v.type))
+
+if __name__ == "__main__":
+    _test()

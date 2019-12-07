@@ -5,10 +5,7 @@ import argparse
 
 
 class Parser:
-    def __init__(self):
-        pass
-
-    def get_args(self):
+    def get_args(self, args=None):
         # Create the parser
         self._p = argparse.ArgumentParser(
             description="Merge exported global variable csv files from Panasonic FPWIN Pro.",
@@ -39,13 +36,6 @@ class Parser:
 
         # Add the arguments
         self._p.add_argument(
-            "-v",
-            "--verbose",
-            action="store_true",
-            help="print results")
-
-        # Add the arguments
-        self._p.add_argument(
             "-i",
             "--id",
             metavar="NAME",
@@ -68,5 +58,24 @@ class Parser:
             type=str,
             help="the name of the type column")
 
+        # Add the arguments
+        self._p.add_argument(
+            "-v",
+            "--values",
+            metavar="NAME",
+            default="Values",
+            type=str,
+            help="the name of the values column")
+
         # Execute the parse_args() method
-        return self._p.parse_args()
+        return self._p.parse_args(args)
+
+
+def _test():
+    """A test method for the module"""
+    p = Parser()
+    args = p.get_args(["globals.csv", "data.csv"])
+    print(args.globals)
+
+if __name__ == "__main__":
+    _test()

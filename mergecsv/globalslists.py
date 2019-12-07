@@ -9,23 +9,16 @@ from evaluators import ObjectEvaluator
 
 
 class GlobalsList:
-    def __init__(self, hl):
+    def __init__(self, id=None, address=None, type=None, values="Values"):
         """"""
         self._gl = [] # global variables list
         self._dl = [] # data list
         self._ol = [] # Output list
-        self._hl = hl # Header list
-
-    def _set_header(self, l):
-        """"""
-        for i, key in enumerate(self._hl):
-            if key == None:
-                self._hl[i] = l[i]
+        self._hl = [id, address, type, values] # Header list
 
     def globals_reader(self, fp):
         """"""
         with open(fp, mode='r') as gf:
-            #self._gl = [Var(row) for row in csv.DictReader(gf)]
             for i, row in enumerate(csv.DictReader(gf)):
                 if i == 0:
                     self._set_header(list(row.keys()))
@@ -36,8 +29,7 @@ class GlobalsList:
         with open(fp, mode='w', newline='') as gf:
             w = csv.DictWriter(gf, fieldnames=self._hl)
             w.writeheader()
-            for gv in self._convert_to_dict():
-                w.writerow(gv)
+            w.writerows(self._convert_to_dict())
 
     def data_reader(self, fp):
         """"""
@@ -64,15 +56,34 @@ class GlobalsList:
             # Get the global variable value
             gv.value = oe.evaluate(gv, gv.type)
             # Add it to the output list
-            self._ol.append(gv)
+            if gv.value != None:
+                self._ol.append(gv)
 
     def _convert_to_dict(self):
         """"""
         l = []
-        od = OrderedDict()
         for gv in self._ol:
-            od.update({self._hl[0]: gv.id})
-            od.update({self._hl[1]: gv.address})
-            od.update({self._hl[2]: gv.type})
-            l.append(od)
+            l.append(OrderedDict({
+                self._hl[0]: gv.id,
+                self._hl[1]: gv.address,
+                self._hl[2]: gv.type,
+                self._hl[3]: gv.value
+            }))
         return l
+
+    def _set_header(self, l):
+        """"""
+        for i, key in enumerate(self._hl):
+            if key == None:
+                self._hl[i] = l[i]
+
+def _test():
+    """A test method for the module"""
+    gl = GlobalsList(values="Values", id="Identity", address="Address", type="Type")
+    gl.globals_reader('../data/globals.csv')
+    gl.data_reader('../data/data.csv')
+    gl.merge_data()
+    print(gl._convert_to_dict())
+
+if __name__ == "__main__":
+    _test()

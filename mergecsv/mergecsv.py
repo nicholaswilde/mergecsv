@@ -14,7 +14,7 @@ def main():
     args = p.get_args()
 
     # Get the global variables list object
-    gl = GlobalsList([args.id, args.address, args.type])
+    gl = GlobalsList(values=args.values, id=args.id, address=args.address, type=args.type)
 
     # Read the global variables CSV file
     gl.globals_reader(args.globals)
@@ -25,6 +25,7 @@ def main():
     # Merge the data with the global variables
     gl.merge_data()
 
+    # Write the output
     gl.globals_writer(args.output)
 
 if __name__ == "__main__":

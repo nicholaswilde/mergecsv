@@ -21,10 +21,6 @@ class Var:
         """"""
         return str(self.value)
 
-    # -----------#
-    # PROPERTIES #
-    # -----------#
-
     @property
     def index(self):
         """https://stackoverflow.com/a/11339230"""
@@ -41,10 +37,18 @@ class Var:
             s = 1
         return s
 
-    # ----------#
-    # FUNCTIONS #
-    # ----------#
-
     def evaluate(self, evaluator):
         """"""
         evaluator.start_object(self)
+
+
+def _test():
+    v = Var({
+        "Identity": "Float1p2345",
+        "Address": "DDT0",
+        "Type": "REAL"
+    })
+    print(v.index)
+
+if __name__ == "__main__":
+    _test()
