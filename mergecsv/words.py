@@ -41,12 +41,10 @@ class Word:
         """https://stackoverflow.com/a/27571588"""
         return len(self.value)
 
-
     @property
     def type(self):
         """"""
         return type(self.value)
-
 
     @property
     def sign(self):
@@ -181,7 +179,8 @@ class Word:
         assert 0 <= n < 2**32
 
         # Shift it 31 digits to get the sign
-        sign = self.sign
+        #sign = self.sign
+        sign = n >> (self.length - 1)
 
         #1 10000010 00111100000011001001111
 
@@ -219,3 +218,11 @@ class Word:
     def zfill(self, n):
         """"""
         return self.value.zfill(n)
+
+
+def _test():
+    w = Word("00111111100111100000010000011001")
+    print(w.to_float32())
+
+if __name__ == "__main__":
+    _test()
